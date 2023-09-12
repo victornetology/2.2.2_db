@@ -2,11 +2,11 @@ from django.db import models
 
 
 class Article(models.Model):
-
     title = models.CharField(max_length=256, verbose_name='Название')
     text = models.TextField(verbose_name='Текст')
     published_at = models.DateTimeField(verbose_name='Дата публикации')
-    image = models.ImageField(null=True, blank=True, verbose_name='Изображение',)
+    image = models.ImageField(null=True, blank=True, verbose_name='Изображение')
+    tags = models.ManyToManyField('Tag', through='Scope')
 
     class Meta:
         verbose_name = 'Статья'
@@ -28,15 +28,14 @@ class Tag(models.Model):
 
 
 class Scope(models.Model):
-   is_main =  models.BooleanField(default=0, verbose_name='Основной')
-   tag = models.ForeignKey(Tag,  on_delete=models.CASCADE)
-   article = models.ForeignKey(Article, on_delete=models.CASCADE)
-   #article = models.ManyToManyField(Article)
+    is_main = models.BooleanField(default=False, verbose_name='Основной')
+    tag = models.ForeignKey('Tag', on_delete=models.CASCADE)
+    article = models.ForeignKey('Article', on_delete=models.CASCADE)
 
-   class Meta:
-       verbose_name = 'Теги к статье'
-       verbose_name_plural = 'Теги к статье'
-       ordering = ['-is_main', 'tag']
+    class Meta:
+        verbose_name = 'Теги к статье'
+        verbose_name_plural = 'Теги к статье'
+        ordering = ['-is_main', 'tag']
 
-   def __str__(self):
-       return self.tag.name
+    def __str__(self):
+        return self.tag.name
